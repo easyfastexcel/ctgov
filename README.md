@@ -31,9 +31,10 @@
 </code>
 
 ## Dependencies
-#### os, sys, json, xmltodict, datetime, requests, urllib, bs4, pprint
+#### The following modules (note: some of these libs are already built-in python) must be installed for ctgov to work properly 
+##### os, sys, json, xmltodict, datetime, requests, urllib, bs4, pprint
 
 ## Project Goals
 #### Add addtional classes to:
-####     - deliver and store data into SQL/NoSQL DBs
-####     - transform and visualize data
+#####     - deliver and store data into SQL/NoSQL DBs
+#####     - transform and visualize data
