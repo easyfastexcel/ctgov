@@ -6,7 +6,7 @@ import datetime
 import requests
 import urllib.request
 from bs4 import BeautifulSoup
-from pprint import pprint as ppt # testing
+from pprint import pprint as ppt # test
 
 
 def timestamp_string():
