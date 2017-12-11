@@ -6,7 +6,7 @@ import datetime
 import requests
 import urllib.request
 from bs4 import BeautifulSoup
-from pprint import pprint as ppt
+from pprint import pprint as ppt # testing
 
 
 def timestamp_string():
@@ -164,8 +164,10 @@ class DataExtract:
             ppt(self.dict_params[param])
         print('')
 
-        with requests.get(self.url_dl_builder()) as r:
-            soup = BeautifulSoup(r.content, 'html.parser')
+        # with requests.get(self.url_dl_builder()) as r:
+        #     soup = BeautifulSoup(r.content, 'html.parser')
+        r = requests.get(self.url_dl_builder())
+        soup = BeautifulSoup(r.content, 'html.parser')
 
         return soup
 
