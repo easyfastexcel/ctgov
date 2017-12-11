@@ -30,6 +30,9 @@
   data.get_list_of_studies_in_json()
 </code>
 
+## Dependencies
+#### os, sys, json, xmltodict, datetime, requests, urllib, bs4, pprint
+
 ## Project Goals
 #### Add addtional classes to:
 ####     - deliver and store data into SQL/NoSQL DBs
