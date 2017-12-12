@@ -166,10 +166,11 @@ class DataExtract:
             ppt(self.dict_params[param])
         print('')
 
-        # with requests.get(self.url_dl_builder()) as r:
-        #     soup = BeautifulSoup(r.content, 'html.parser')
         url = self.url_dl_builder()
         print('[', timestamp_string(), '] extracting data...')
+        # with requests.get(url) as r:
+        #     print('[', timestamp_string(), '] parsing extracted data...')
+        #     soup = BeautifulSoup(r.content, 'html.parser')
         r = requests.get(url)
         print('[', timestamp_string(), '] parsing extracted data...')
         soup = BeautifulSoup(r.content, 'html.parser')
@@ -183,11 +184,7 @@ class DataExtract:
         return soup
 
     def get_list_of_studies_in_xml(self):
-        # search_results = self.soup_xml_data.find('search_results')
         list_studies_in_xml = self.soup_xml_data.find_all('study')
-
-        # print('\nTOTAL SEARCH RESULTS: ', str(search_results['count']))
-        # print('TOTAL STUDIES EXTRACTED: ', str(len(list_studies_in_xml)), 'of', str(search_results['count']), '\n')
 
         return list_studies_in_xml
 
