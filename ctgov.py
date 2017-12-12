@@ -151,7 +151,7 @@ class DataExtract:
         param_basedl = self.basedl_param_builder()
         param_query = self.query_param_builder()
 
-        print('[', timestamp_string(), '] building url for download...')
+        print('[', timestamp_string(), '] building url for data extract...')
         url_dl = url_base + param_basedl + '&' + param_query
 
         return url_dl
@@ -169,7 +169,9 @@ class DataExtract:
         # with requests.get(self.url_dl_builder()) as r:
         #     soup = BeautifulSoup(r.content, 'html.parser')
         r = requests.get(self.url_dl_builder())
+        print('[', timestamp_string(), '] parsing extracted data...')
         soup = BeautifulSoup(r.content, 'html.parser')
+        print('[', timestamp_string(), '] done!')
 
         return soup
 
