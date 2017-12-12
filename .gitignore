@@ -3,5 +3,5 @@ __pycache__/*
 .idea/*
 ctgov_dlxmlstudies.py
 *.ipynb
-ctgov1.py
 ctgov2.py
+
