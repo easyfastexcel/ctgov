@@ -175,20 +175,23 @@ class DataExtract:
         soup = BeautifulSoup(r.content, 'html.parser')
         print('[', timestamp_string(), '] done!')
 
+        search_results = soup.find('search_results')
+        print('\nTOTAL SEARCH RESULTS: ', str(search_results['count']))
+        list_studies_in_xml = soup.find_all('study')
+        print('TOTAL STUDIES EXTRACTED: ', str(len(list_studies_in_xml)), 'of', str(search_results['count']), '\n')
+
         return soup
 
     def get_list_of_studies_in_xml(self):
-        # soup = self.request_xml_data()
-        search_results = self.soup_xml_data.find('search_results')
+        # search_results = self.soup_xml_data.find('search_results')
         list_studies_in_xml = self.soup_xml_data.find_all('study')
 
-        print('\nTOTAL SEARCH RESULTS: ', str(search_results['count']))
-        print('TOTAL STUDIES EXTRACTED: ', str(len(list_studies_in_xml)), 'of', str(search_results['count']), '\n')
+        # print('\nTOTAL SEARCH RESULTS: ', str(search_results['count']))
+        # print('TOTAL STUDIES EXTRACTED: ', str(len(list_studies_in_xml)), 'of', str(search_results['count']), '\n')
 
         return list_studies_in_xml
 
     def get_list_of_studies_in_json(self):
-        # list_studies_in_xml = self.get_list_of_studies_in_xml()
         list_studies_in_json = [json.loads(json.dumps(xmltodict.parse(str(study))))["study"]
                                 for study in self.get_list_of_studies_in_xml()]  # list_studies_in_xml]
         return list_studies_in_json
