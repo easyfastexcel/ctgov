@@ -168,7 +168,9 @@ class DataExtract:
 
         # with requests.get(self.url_dl_builder()) as r:
         #     soup = BeautifulSoup(r.content, 'html.parser')
-        r = requests.get(self.url_dl_builder())
+        url = self.url_dl_builder()
+        print('[', timestamp_string(), '] extracting data...')
+        r = requests.get(url)
         print('[', timestamp_string(), '] parsing extracted data...')
         soup = BeautifulSoup(r.content, 'html.parser')
         print('[', timestamp_string(), '] done!')
