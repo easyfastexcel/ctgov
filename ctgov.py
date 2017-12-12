@@ -9,34 +9,59 @@ from bs4 import BeautifulSoup
 from pprint import pprint as ppt
 
 
-def timestamp_string():
+def timestamp_string(option='default'):
     now = datetime.datetime.now()
-    timestamp_date = str(now.year) + '.' + '{:02d}'.format(now.month) + '.' + '{:02d}'.format(now.day)
-    timestamp_time = '{:02d}'.format(now.hour) + ':' + '{:02d}'.format(now.minute) + ':' + '{:02d}'.format(now.second)
-    timestamp = timestamp_date + ' ' + timestamp_time
+
+    if option == 'default':     # e.g. yyyy.mm.dd hh:mm:ss
+        timestamp_date = str(now.year) + '.' + '{:02d}'.format(now.month) + '.' + '{:02d}'.format(now.day)
+        timestamp_time = '{:02d}'.format(now.hour) + ':' + '{:02d}'.format(now.minute) + \
+                         ':' + '{:02d}'.format(now.second)
+        timestamp = timestamp_date + ' ' + timestamp_time
+    elif option == 'filename':  # e.g. yyyymmdd_hhmmss
+        timestamp_date = str(now.year) + '{:02d}'.format(now.month) + '{:02d}'.format(now.day)
+        timestamp_time = '{:02d}'.format(now.hour) + '{:02d}'.format(now.minute) + '{:02d}'.format(now.second)
+        timestamp = timestamp_date + '_' + timestamp_time
+    else:
+        print('error in "def timestamp_string(option)"')
+        sys.exit('ERROR - entered "option" is not accepted')
 
     return timestamp
 
 
-def dir_dl_path_generator():
-    dir_temp = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + '/temp/'
-    dir_dldrop = dir_temp + 'dldrop/'
+def dir_dl_path_generator(option):
+
+    if option == 'Downloads':
+        dir_dldrop = os.path.expanduser('~').replace('\\', '/')+'/Downloads/'
+    elif option == 'Dev':
+        dir_temp = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + '/temp/'
+        dir_dldrop = dir_temp + 'dldrop/'
+    else:
+        print('An unacceptable "option" was entered')
+        sys.exit('error at "def dir_dl_path_generator()"')
+
     return dir_dldrop
 
 
-def check_dir_dl():
+def check_dir_dl(option):
     print('[ ' + timestamp_string() + ' ] ' + 'initiating download')
 
-    dirname = dir_dl_path_generator()
+    dirname = dir_dl_path_generator(option)
 
-    try:
-        if len(os.listdir(dirname)) >= 1:
-            [os.remove(dirname + i) for i in os.listdir(dirname)]
-    except Exception as e:
-        # if not os.path.exists(dir_dldrop):
-        #     os.makedirs(dir_dldrop)
-        print('[ERROR - Missing Directory] ' + dirname + '\n')
-        sys.exit(e)
+    if option == 'Downloads':
+        if os.path.exists(dirname):
+            print(dirname, 'exists')
+        else:
+            sys.exit('ERROR - "'+dirname+'" not found')
+    elif option == 'Dev':
+        try:
+            if len(os.listdir(dirname)) >= 1:
+                [os.remove(dirname + i) for i in os.listdir(dirname)]
+        except Exception as e:
+            print('[ERROR - Missing Directory] ' + dirname + '\n')
+            sys.exit(e)
+    else:
+        print('error at "def check_dir_dl(option):"')
+        sys.exit('ERROR - entered "option" is not accepted')
 
 
 class DataExtract:
@@ -63,7 +88,7 @@ class DataExtract:
                 'param_phase': param_phase,     # 4, 0, 1, 2, 3 ("4" is "early phase 1", "0" is "phase 1")
                 'param_fund': param_fund}       # 0 (NIH), 1 (Other US), 2 (Industry), 3 (all others; univ, indiv, org)
         }
-
+        self.timestamp_filename = timestamp_string(option='filename')
         self.soup_xml_data = self.request_xml_data()
 
     def basedl_param_builder(self):
@@ -185,23 +210,21 @@ class DataExtract:
 
     def get_list_of_studies_in_xml(self):
         list_studies_in_xml = self.soup_xml_data.find_all('study')
-
         return list_studies_in_xml
 
     def get_list_of_studies_in_json(self):
         list_studies_in_json = [json.loads(json.dumps(xmltodict.parse(str(study))))["study"]
-                                for study in self.get_list_of_studies_in_xml()]  # list_studies_in_xml]
+                                for study in self.get_list_of_studies_in_xml()]
         return list_studies_in_json
 
-    def dl_xml_studies(self):
-        # url_base = 'https://clinicaltrials.gov/ct2/results/download_fields?'
-        # url_dl = url_base + url_param_basedl +'&'+ url_param_query
-        # url_dl = self.url_dl_builder()
-        # print(dl_dirname+'ctgov_dl.xml')
-
-        check_dir_dl()
-        urllib.request.urlretrieve(str(self.url_dl_builder()), str(dir_dl_path_generator())+'ctgov_dl.xml')
-        print('[ ' + timestamp_string() + ' ] ' + 'download completed')
+    def dl_xml_studies(self, option='Downloads'):
+        dirname = dir_dl_path_generator(option)
+        if option == 'Dev':
+            check_dir_dl(option)
+        urllib.request.urlretrieve(str(self.url_dl_builder()),
+                                   str(dirname)+'ctgov_dl_'+str(self.timestamp_filename)+'.xml')
+        print('[ ' + timestamp_string() + ' ] ' + 'download completed...'
+                                                  'the file has been downloaded into "'+dirname+'"')
 
 # def main():
 #     data_ctgov = DataExtract()
@@ -211,4 +234,3 @@ class DataExtract:
 #
 # if __name__ == '__main__':
 #     main()
-#
