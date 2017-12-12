@@ -64,6 +64,8 @@ class DataExtract:
                 'param_fund': param_fund}       # 0 (NIH), 1 (Other US), 2 (Industry), 3 (all others; univ, indiv, org)
         }
 
+        self.soup_xml_data = self.request_xml_data()
+
     def basedl_param_builder(self):
         print('[', timestamp_string(), '] building url parameters for download formats ("basedl")...')
         param_basedl = ''
@@ -172,9 +174,9 @@ class DataExtract:
         return soup
 
     def get_list_of_studies_in_xml(self):
-        soup = self.request_xml_data()
-        search_results = soup.find('search_results')
-        list_studies_in_xml = soup.find_all('study')
+        # soup = self.request_xml_data()
+        search_results = self.soup_xml_data.find('search_results')
+        list_studies_in_xml = self.soup_xml_data.find_all('study')
 
         print('\nTOTAL SEARCH RESULTS: ', str(search_results['count']))
         print('TOTAL STUDIES EXTRACTED: ', str(len(list_studies_in_xml)), 'of', str(search_results['count']), '\n')
