@@ -1,11 +1,12 @@
 import re
+import yaml
 import zipfile
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from pprint import pprint as ppt
 
-from akpy.str_mgmt import *
+# from akpy.str_mgmt import *
 from time_mgmt import *
 
 
@@ -558,8 +559,10 @@ def add_overall_contact(base_dict, soup_clinical_study):
 
 if __name__ == '__main__':
     print('[', time_stamp(), ']', 'reading zip file')
-    zip_path = 'C:\\Users\\alfon\\OneDrive\\Documents\\dev\\python_od\\' \
-               'ctgov_dev\\ctgov\\data_temp\\all_studies\\new\\AllPublicXML.zip'
+
+    yaml_data = yaml.load(open('var.yaml', 'r'))
+    zip_path = yaml_data['zip_path']
+
     z = zipfile.ZipFile(zip_path, 'r')
 
     list_filenames = z.namelist()[1:]

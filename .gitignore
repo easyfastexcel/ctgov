@@ -4,4 +4,5 @@ __pycache__/
 ctgov_dlxmlstudies.py
 *.ipynb
 ctgov2.py
-
+var.yaml
+test.py
