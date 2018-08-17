@@ -1,4 +1,6 @@
 # ctgov modules
+* ctgov.py 
+* ctgov_zip.py
 
 ## ctgov.py
 #### This module includes functions and a class to query www.ClinicalTrials.gov, extract study data, and facilitate utilization.  
@@ -43,4 +45,4 @@
 
 
 ## ctgov_zip.py
-#### -- development in progress
+<development in progress>
