@@ -523,38 +523,205 @@ def add_overall_contact(base_dict, soup_clinical_study):
         <xs:element name="email" type="xs:string" minOccurs="0"/>
     """
 
-    base_dict['eligibility'] = {
-        'study_pop': None,
-        'sampling_method': None,
-        'criteria': None,
-        'gender': None,
-        'gender_based': None,
-        'gender_description': None,
-        'minimum_age': None,
-        'maximum_age': None,
-        'healthy_volunteers': None
+    base_dict['overall_contact'] = {
+        'first_name': None,
+        'middle_name': None,
+        'last_name': None,
+        'degrees': None,
+        'phone': None,
+        'phone_ext': None,
+        'email': None
     }
-    if soup_clinical_study.eligibility is not None:
-        if soup_clinical_study.eligibility.study_pop is not None:
-            base_dict['eligibility']['study_pop'] = soup_clinical_study.eligibility.study_pop.text.strip()
-        if soup_clinical_study.eligibility.sampling_method is not None:
-            base_dict['eligibility']['sampling_method'] = soup_clinical_study.eligibility.sampling_method.text.strip()
-        if soup_clinical_study.eligibility.criteria is not None:
-            el_text = soup_clinical_study.eligibility.criteria.text.strip().replace('\n', '').replace('\r', '')
-            base_dict['eligibility']['criteria'] = ' '.join(el_text.split())
-        if soup_clinical_study.eligibility.gender is not None:
-            base_dict['eligibility']['gender'] = soup_clinical_study.eligibility.gender.text.strip()
-        if soup_clinical_study.eligibility.gender_based is not None:
-            base_dict['eligibility']['gender_based'] = soup_clinical_study.eligibility.gender_based.text.strip()
-        if soup_clinical_study.eligibility.gender_description is not None:
-            base_dict['eligibility']['gender_description'] = soup_clinical_study.eligibility.gender_description.text.strip()
-        if soup_clinical_study.eligibility.minimum_age is not None:
-            base_dict['eligibility']['minimum_age'] = soup_clinical_study.eligibility.minimum_age.text.strip()
-        if soup_clinical_study.eligibility.maximum_age is not None:
-            base_dict['eligibility']['maximum_age'] = soup_clinical_study.eligibility.maximum_age.text.strip()
-        if soup_clinical_study.eligibility.healthy_volunteers is not None:
-            base_dict['eligibility']['healthy_volunteers'] = soup_clinical_study.eligibility.healthy_volunteers.text.strip()
+    if soup_clinical_study.overall_contact is not None:
+        if soup_clinical_study.overall_contact.first_name is not None:
+            base_dict['overall_contact']['first_name'] = soup_clinical_study.overall_contact.first_name.text.strip()
+        if soup_clinical_study.overall_contact.middle_name is not None:
+            base_dict['overall_contact']['middle_name'] = soup_clinical_study.overall_contact.middle_name.text.strip()
+        if soup_clinical_study.overall_contact.last_name is not None:
+            base_dict['overall_contact']['last_name'] = soup_clinical_study.overall_contact.last_name.text.strip()
+        if soup_clinical_study.overall_contact.degrees is not None:
+            base_dict['overall_contact']['degrees'] = soup_clinical_study.overall_contact.degrees.text.strip()
+        if soup_clinical_study.overall_contact.phone is not None:
+            base_dict['overall_contact']['phone'] = soup_clinical_study.overall_contact.phone.text.strip()
+        if soup_clinical_study.overall_contact.phone_ext is not None:
+            base_dict['overall_contact']['phone_ext'] = soup_clinical_study.overall_contact.phone_ext.text.strip()
+        if soup_clinical_study.overall_contact.email is not None:
+            base_dict['overall_contact']['email'] = soup_clinical_study.overall_contact.email.text.strip()
     return base_dict
+
+
+def add_overall_contact_backup(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="overall_contact_backup" type="contact_struct" minOccurs="0"/>
+
+        contact_struct
+        <xs:element name="first_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="middle_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="last_name" type="xs:string" minOccurs="0"/>
+        <xs:element name="degrees" type="xs:string" minOccurs="0"/>
+        <xs:element name="phone" type="xs:string" minOccurs="0"/>
+        <xs:element name="phone_ext" type="xs:string" minOccurs="0"/>
+        <xs:element name="email" type="xs:string" minOccurs="0"/>
+    """
+
+    base_dict['overall_contact_backup'] = {
+        'first_name': None,
+        'middle_name': None,
+        'last_name': None,
+        'degrees': None,
+        'phone': None,
+        'phone_ext': None,
+        'email': None
+    }
+    if soup_clinical_study.overall_contact is not None:
+        if soup_clinical_study.overall_contact.first_name is not None:
+            base_dict['overall_contact']['first_name'] = soup_clinical_study.overall_contact.first_name.text.strip()
+        if soup_clinical_study.overall_contact.middle_name is not None:
+            base_dict['overall_contact']['middle_name'] = soup_clinical_study.overall_contact.middle_name.text.strip()
+        if soup_clinical_study.overall_contact.last_name is not None:
+            base_dict['overall_contact']['last_name'] = soup_clinical_study.overall_contact.last_name.text.strip()
+        if soup_clinical_study.overall_contact.degrees is not None:
+            base_dict['overall_contact']['degrees'] = soup_clinical_study.overall_contact.degrees.text.strip()
+        if soup_clinical_study.overall_contact.phone is not None:
+            base_dict['overall_contact']['phone'] = soup_clinical_study.overall_contact.phone.text.strip()
+        if soup_clinical_study.overall_contact.phone_ext is not None:
+            base_dict['overall_contact']['phone_ext'] = soup_clinical_study.overall_contact.phone_ext.text.strip()
+        if soup_clinical_study.overall_contact.email is not None:
+            base_dict['overall_contact']['email'] = soup_clinical_study.overall_contact.email.text.strip()
+    return base_dict
+
+
+# def add_location(base_dict, soup_clinical_study):
+#     """
+#     Relevant .xsd structures:
+#     <xs:element name="location" type="location_struct" minOccurs="0" maxOccurs="unbounded"/>
+#
+#         <!-- === Location ==================================================== -->
+#           <xs:complexType name="location_struct">
+#             <xs:sequence>
+#               <xs:element name="facility" type="facility_struct" minOccurs="0"/>
+#               <xs:element name="status" type="recruitment_status_enum" minOccurs="0"/>
+#               <xs:element name="contact" type="contact_struct" minOccurs="0"/>
+#               <xs:element name="contact_backup" type="contact_struct" minOccurs="0"/>
+#               <xs:element name="investigator" type="investigator_struct" minOccurs="0" maxOccurs="unbounded"/>
+#             </xs:sequence>
+#           </xs:complexType>
+#
+#         <!-- === Address ===================================================== -->
+#           <xs:complexType name="address_struct">
+#             <xs:sequence>
+#               <xs:element name="city" type="xs:string"/>
+#               <xs:element name="state" type="xs:string"  minOccurs="0"/>
+#               <xs:element name="zip" type="xs:string"  minOccurs="0"/>
+#               <xs:element name="country" type="xs:string"/>
+#             </xs:sequence>
+#           </xs:complexType>
+#
+#         <!-- === Facility ==================================================== -->
+#           <xs:complexType name="facility_struct">
+#             <xs:sequence>
+#               <xs:element name="name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="address" type="address_struct" minOccurs="0"/>
+#             </xs:sequence>
+#           </xs:complexType>
+#
+#         <!-- === recruitment_status_enum ==================================================== -->
+#           <xs:simpleType name="recruitment_status_enum">
+#             <xs:restriction base="xs:string">
+#               <xs:enumeration value="Active, not recruiting" />
+#               <xs:enumeration value="Completed" />
+#               <xs:enumeration value="Enrolling by invitation" />
+#               <xs:enumeration value="Not yet recruiting" />
+#               <xs:enumeration value="Recruiting" />
+#               <xs:enumeration value="Suspended" />
+#               <xs:enumeration value="Terminated" />
+#               <xs:enumeration value="Withdrawn" />
+#             </xs:restriction>
+#           </xs:simpleType>
+#
+#         <!-- === Contact ===================================================== -->
+#           <xs:complexType name="contact_struct">
+#             <xs:sequence>
+#               <xs:element name="first_name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="middle_name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="last_name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="degrees" type="xs:string" minOccurs="0"/>
+#               <xs:element name="phone" type="xs:string" minOccurs="0"/>
+#               <xs:element name="phone_ext" type="xs:string" minOccurs="0"/>
+#               <xs:element name="email" type="xs:string" minOccurs="0"/>
+#             </xs:sequence>
+#           </xs:complexType>
+#
+#         <!-- === Investigator ================================================ -->
+#           <xs:complexType name="investigator_struct">
+#             <xs:sequence>
+#               <xs:element name="first_name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="middle_name" type="xs:string" minOccurs="0"/>
+#               <xs:element name="last_name" type="xs:string"/>
+#               <xs:element name="degrees" type="xs:string" minOccurs="0"/>
+#               <xs:element name="role" type="role_enum" minOccurs="0"/>
+#               <xs:element name="affiliation" type="xs:string" minOccurs="0"/>
+#             </xs:sequence>
+#           </xs:complexType>
+#
+#     """
+#
+#
+#     base_dict['location'] = None
+#     locations = []
+#
+#     if soup_clinical_study.location is not None:
+#         locs = soup_clinical_study.find_all(['location'])
+#         for loc in locs:
+#             location_dict = {
+#                 'facility': None,
+#                 'status': None,
+#                 'contact': None,
+#                 'contact_backup': None,
+#                 'investigator': None  # list
+#             }
+#             loc_facility_dict = {
+#                 'name': None,
+#                 'address': None
+#             }
+#             loc_facility_address_dict = {
+#                 'city': None,
+#                 'state': None,
+#                 'zip': None,
+#                 'country': None
+#             }
+#             loc_contact_dict = {
+#                 'first_name': None,
+#                 'middle_name': None,
+#                 'last_name': None,
+#                 'degrees': None,
+#                 'phone': None,
+#                 'phone_ext': None,
+#                 'email': None
+#             }
+#             loc_contact_bk_dict = {
+#                 'first_name': None,
+#                 'middle_name': None,
+#                 'last_name': None,
+#                 'degrees': None,
+#                 'phone': None,
+#                 'phone_ext': None,
+#                 'email': None
+#             }
+#             loc_pi_dict = {
+#                 'first_name': None,
+#                 'middle_name': None,
+#                 'last_name': None,
+#                 'degrees': None,
+#                 'role': None,
+#                 'affiliation': None
+#             }
+#             if loc. is not None:
+#                 location_dict[''] = loc..text.strip()
+#             locations.append(location_dict)
+#     base_dict['location'] = locations
+#     return base_dict
 
 
 if __name__ == '__main__':
@@ -568,7 +735,7 @@ if __name__ == '__main__':
     list_filenames = z.namelist()[1:]
     print('[', time_stamp(), ']', len(list_filenames), 'xml files detected in zip')
 
-    for filename in list_filenames[20000:20010]:
+    for filename in list_filenames[19000:19100]:
         file_content = z.open(filename).read().decode('utf-8')
         soup = BeautifulSoup(file_content, 'lxml').clinical_study
 
@@ -603,8 +770,8 @@ if __name__ == '__main__':
         # dict_study = add_biospec_retention(dict_study, soup)
         # dict_study = add_biospec_descr(dict_study, soup)
         # dict_study = add_eligibility(dict_study, soup)
-        dict_study = add_overall_official(dict_study, soup)
-        # dict_study = (dict_study, soup)
+        # dict_study = add_overall_official(dict_study, soup)
+        dict_study = add_overall_contact(dict_study, soup)
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
