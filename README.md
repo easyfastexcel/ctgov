@@ -1,7 +1,11 @@
-# ctgov
+# ctgov modules
+* ctgov.py 
+* ctgov_zip.py
+
+## ctgov.py
 #### This module includes functions and a class to query www.ClinicalTrials.gov, extract study data, and facilitate utilization.  
 
-## Examples
+### Examples
 #### Example 1: extract study data of the first 10 studies from all studies in www.ClinicalTrials.gov
 <code>
   import ctgov
@@ -30,11 +34,15 @@
   data.get_list_of_studies_in_json()
 </code>
 
-## Dependencies
+### Dependencies
 #### The following modules (note: some of these libs are already built-in python) must be installed for ctgov to work properly 
 ##### os, sys, json, xmltodict, datetime, requests, urllib, bs4, pprint
 
-## Project Goals
+### Project Goals
 #### Add addtional classes to:
 #####     - deliver and store data into SQL/NoSQL DBs
 #####     - transform and visualize data
+
+
+## ctgov_zip.py
+development in progress
