@@ -1,12 +1,11 @@
 import re
-import yaml
 import zipfile
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from pprint import pprint as ppt
 
-# from akpy.str_mgmt import *
+from akpy.str_mgmt import *
 from time_mgmt import *
 
 
@@ -39,6 +38,7 @@ def add_id_info(base_dict, soup_clinical_study):
         base_dict['study_ids'][c.name] = c.text.strip()
         if c.name == 'nct_id':
             base_dict['_id'] = c.text.strip()
+            print(base_dict['_id'], '-------------------------')
     return base_dict
 
 
@@ -553,7 +553,7 @@ def add_overall_contact(base_dict, soup_clinical_study):
 def add_overall_contact_backup(base_dict, soup_clinical_study):
     """
     Relevant .xsd structures:
-    <xs:element name="overall_contact_backup" type="contact_struct" minOccurs="0"/>
+    <xs:element name="overall_contact" type="contact_struct" minOccurs="0"/>
 
         contact_struct
         <xs:element name="first_name" type="xs:string" minOccurs="0"/>
@@ -574,168 +574,661 @@ def add_overall_contact_backup(base_dict, soup_clinical_study):
         'phone_ext': None,
         'email': None
     }
-    if soup_clinical_study.overall_contact is not None:
-        if soup_clinical_study.overall_contact.first_name is not None:
-            base_dict['overall_contact']['first_name'] = soup_clinical_study.overall_contact.first_name.text.strip()
-        if soup_clinical_study.overall_contact.middle_name is not None:
-            base_dict['overall_contact']['middle_name'] = soup_clinical_study.overall_contact.middle_name.text.strip()
-        if soup_clinical_study.overall_contact.last_name is not None:
-            base_dict['overall_contact']['last_name'] = soup_clinical_study.overall_contact.last_name.text.strip()
-        if soup_clinical_study.overall_contact.degrees is not None:
-            base_dict['overall_contact']['degrees'] = soup_clinical_study.overall_contact.degrees.text.strip()
-        if soup_clinical_study.overall_contact.phone is not None:
-            base_dict['overall_contact']['phone'] = soup_clinical_study.overall_contact.phone.text.strip()
-        if soup_clinical_study.overall_contact.phone_ext is not None:
-            base_dict['overall_contact']['phone_ext'] = soup_clinical_study.overall_contact.phone_ext.text.strip()
-        if soup_clinical_study.overall_contact.email is not None:
-            base_dict['overall_contact']['email'] = soup_clinical_study.overall_contact.email.text.strip()
+    if soup_clinical_study.overall_contact_backup is not None:
+        if soup_clinical_study.overall_contact_backup.first_name is not None:
+            base_dict['overall_contact_backup']['first_name'] = soup_clinical_study.overall_contact_backup.first_name.text.strip()
+        if soup_clinical_study.overall_contact_backup.middle_name is not None:
+            base_dict['overall_contact_backup']['middle_name'] = soup_clinical_study.overall_contact_backup.middle_name.text.strip()
+        if soup_clinical_study.overall_contact_backup.last_name is not None:
+            base_dict['overall_contact_backup']['last_name'] = soup_clinical_study.overall_contact_backup.last_name.text.strip()
+        if soup_clinical_study.overall_contact_backup.degrees is not None:
+            base_dict['overall_contact_backup']['degrees'] = soup_clinical_study.overall_contact_backup.degrees.text.strip()
+        if soup_clinical_study.overall_contact_backup.phone is not None:
+            base_dict['overall_contact_backup']['phone'] = soup_clinical_study.overall_contact_backup.phone.text.strip()
+        if soup_clinical_study.overall_contact_backup.phone_ext is not None:
+            base_dict['overall_contact_backup']['phone_ext'] = soup_clinical_study.overall_contact_backup.phone_ext.text.strip()
+        if soup_clinical_study.overall_contact_backup.email is not None:
+            base_dict['overall_contact_backup']['email'] = soup_clinical_study.overall_contact_backup.email.text.strip()
     return base_dict
 
 
-# def add_location(base_dict, soup_clinical_study):
-#     """
-#     Relevant .xsd structures:
-#     <xs:element name="location" type="location_struct" minOccurs="0" maxOccurs="unbounded"/>
-#
-#         <!-- === Location ==================================================== -->
-#           <xs:complexType name="location_struct">
-#             <xs:sequence>
-#               <xs:element name="facility" type="facility_struct" minOccurs="0"/>
-#               <xs:element name="status" type="recruitment_status_enum" minOccurs="0"/>
-#               <xs:element name="contact" type="contact_struct" minOccurs="0"/>
-#               <xs:element name="contact_backup" type="contact_struct" minOccurs="0"/>
-#               <xs:element name="investigator" type="investigator_struct" minOccurs="0" maxOccurs="unbounded"/>
-#             </xs:sequence>
-#           </xs:complexType>
-#
-#         <!-- === Address ===================================================== -->
-#           <xs:complexType name="address_struct">
-#             <xs:sequence>
-#               <xs:element name="city" type="xs:string"/>
-#               <xs:element name="state" type="xs:string"  minOccurs="0"/>
-#               <xs:element name="zip" type="xs:string"  minOccurs="0"/>
-#               <xs:element name="country" type="xs:string"/>
-#             </xs:sequence>
-#           </xs:complexType>
-#
-#         <!-- === Facility ==================================================== -->
-#           <xs:complexType name="facility_struct">
-#             <xs:sequence>
-#               <xs:element name="name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="address" type="address_struct" minOccurs="0"/>
-#             </xs:sequence>
-#           </xs:complexType>
-#
-#         <!-- === recruitment_status_enum ==================================================== -->
-#           <xs:simpleType name="recruitment_status_enum">
-#             <xs:restriction base="xs:string">
-#               <xs:enumeration value="Active, not recruiting" />
-#               <xs:enumeration value="Completed" />
-#               <xs:enumeration value="Enrolling by invitation" />
-#               <xs:enumeration value="Not yet recruiting" />
-#               <xs:enumeration value="Recruiting" />
-#               <xs:enumeration value="Suspended" />
-#               <xs:enumeration value="Terminated" />
-#               <xs:enumeration value="Withdrawn" />
-#             </xs:restriction>
-#           </xs:simpleType>
-#
-#         <!-- === Contact ===================================================== -->
-#           <xs:complexType name="contact_struct">
-#             <xs:sequence>
-#               <xs:element name="first_name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="middle_name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="last_name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="degrees" type="xs:string" minOccurs="0"/>
-#               <xs:element name="phone" type="xs:string" minOccurs="0"/>
-#               <xs:element name="phone_ext" type="xs:string" minOccurs="0"/>
-#               <xs:element name="email" type="xs:string" minOccurs="0"/>
-#             </xs:sequence>
-#           </xs:complexType>
-#
-#         <!-- === Investigator ================================================ -->
-#           <xs:complexType name="investigator_struct">
-#             <xs:sequence>
-#               <xs:element name="first_name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="middle_name" type="xs:string" minOccurs="0"/>
-#               <xs:element name="last_name" type="xs:string"/>
-#               <xs:element name="degrees" type="xs:string" minOccurs="0"/>
-#               <xs:element name="role" type="role_enum" minOccurs="0"/>
-#               <xs:element name="affiliation" type="xs:string" minOccurs="0"/>
-#             </xs:sequence>
-#           </xs:complexType>
-#
-#     """
-#
-#
-#     base_dict['location'] = None
-#     locations = []
-#
-#     if soup_clinical_study.location is not None:
-#         locs = soup_clinical_study.find_all(['location'])
-#         for loc in locs:
-#             location_dict = {
-#                 'facility': None,
-#                 'status': None,
-#                 'contact': None,
-#                 'contact_backup': None,
-#                 'investigator': None  # list
-#             }
-#             loc_facility_dict = {
-#                 'name': None,
-#                 'address': None
-#             }
-#             loc_facility_address_dict = {
-#                 'city': None,
-#                 'state': None,
-#                 'zip': None,
-#                 'country': None
-#             }
-#             loc_contact_dict = {
-#                 'first_name': None,
-#                 'middle_name': None,
-#                 'last_name': None,
-#                 'degrees': None,
-#                 'phone': None,
-#                 'phone_ext': None,
-#                 'email': None
-#             }
-#             loc_contact_bk_dict = {
-#                 'first_name': None,
-#                 'middle_name': None,
-#                 'last_name': None,
-#                 'degrees': None,
-#                 'phone': None,
-#                 'phone_ext': None,
-#                 'email': None
-#             }
-#             loc_pi_dict = {
-#                 'first_name': None,
-#                 'middle_name': None,
-#                 'last_name': None,
-#                 'degrees': None,
-#                 'role': None,
-#                 'affiliation': None
-#             }
-#             if loc. is not None:
-#                 location_dict[''] = loc..text.strip()
-#             locations.append(location_dict)
-#     base_dict['location'] = locations
-#     return base_dict
+def add_location(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="location" type="location_struct" minOccurs="0" maxOccurs="unbounded"/>
+
+        location_struct
+        <xs:complexType name="location_struct">
+            <xs:sequence>
+                <xs:element name="facility" type="facility_struct" minOccurs="0"/>
+                <xs:element name="status" type="recruitment_status_enum" minOccurs="0"/>
+                <xs:element name="contact" type="contact_struct" minOccurs="0"/>
+                <xs:element name="contact_backup" type="contact_struct" minOccurs="0"/>
+                <xs:element name="investigator" type="investigator_struct" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.location is None:
+        base_dict['location'] = None
+    else:
+        locations_list = []
+        locations = soup_clinical_study.find_all(['location'])
+
+        for location in locations:
+            # print(location)
+            location_dict = {
+                'facility': None,
+                'status': None,
+                'contact': None,
+                'contact_backup': None,
+                'investigator': None
+            }
+            if location.facility is not None:
+                facility_dict = {
+                    'name': None,
+                    'address': None
+                }
+                if location.facility.find('name') is not None:
+                    facility_dict['name'] = location.facility.find('name').text.strip()
+                if location.facility.address is not None:
+                    address_dict = {
+                        'city': None,
+                        'state': None,
+                        'zip': None,
+                        'country': None
+                    }
+                    if location.facility.address.city is not None:
+                        address_dict['city'] = location.facility.address.city.text.strip()
+                    if location.facility.address.state is not None:
+                        address_dict['state'] = location.facility.address.state.text.strip()
+                    if location.facility.address.zip is not None:
+                        address_dict['zip'] = location.facility.address.zip.text.strip()
+                    if location.facility.address.country is not None:
+                        address_dict['country'] = location.facility.address.country.text.strip()
+                    facility_dict['address'] = address_dict
+
+                location_dict['facility'] = facility_dict
+
+            if location.status is not None:
+                location_dict['status'] = location.status.text.strip()
+
+            if location.contact is not None:
+                contact_dict = {
+                    'first_name': None,
+                    'middle_name': None,
+                    'last_name': None,
+                    'degrees': None,
+                    'phone': None,
+                    'phone_ext': None,
+                    'email': None
+                }
+                if location.contact.first_name is not None:
+                    contact_dict['first_name'] = location.contact.first_name.text.strip()
+                if location.contact.middle_name is not None:
+                    contact_dict['middle_name'] = location.contact.middle_name.text.strip()
+                if location.contact.last_name is not None:
+                    contact_dict['last_name'] = location.contact.last_name.text.strip()
+                if location.contact.degrees is not None:
+                    contact_dict['degrees'] = location.contact.degrees.text.strip()
+                if location.contact.phone is not None:
+                    contact_dict['phone'] = location.contact.phone.text.strip()
+                if location.contact.phone_ext is not None:
+                    contact_dict['phone_ext'] = location.contact.phone_ext.text.strip()
+                if location.contact.email is not None:
+                    contact_dict['email'] = location.contact.email.text.strip()
+
+                location_dict['contact'] = contact_dict
+
+            if location.contact_backup is not None:
+                contact_backup_dict = {
+                    'first_name': None,
+                    'middle_name': None,
+                    'last_name': None,
+                    'degrees': None,
+                    'phone': None,
+                    'phone_ext': None,
+                    'email': None
+                }
+                if location.contact.first_name is not None:
+                    contact_backup_dict['first_name'] = location.contact.first_name.text.strip()
+                if location.contact.middle_name is not None:
+                    contact_backup_dict['middle_name'] = location.contact.middle_name.text.strip()
+                if location.contact.last_name is not None:
+                    contact_backup_dict['last_name'] = location.contact.last_name.text.strip()
+                if location.contact.degrees is not None:
+                    contact_backup_dict['degrees'] = location.contact.degrees.text.strip()
+                if location.contact.phone is not None:
+                    contact_backup_dict['phone'] = location.contact.phone.text.strip()
+                if location.contact.phone_ext is not None:
+                    contact_backup_dict['phone_ext'] = location.contact.phone_ext.text.strip()
+                if location.contact.email is not None:
+                    contact_backup_dict['email'] = location.contact.email.text.strip()
+
+                location_dict['contact_backup'] = contact_backup_dict
+
+            if location.investigator is not None:
+
+                location_investigators = []
+
+                investigators = location.find_all(['investigator'])
+                for investigator in investigators:
+                    location_investigators_dict = {
+                        'first_name': None,
+                        'middle_name': None,
+                        'last_name': None,
+                        'degrees': None,
+                        'role': None,
+                        'affiliation': None
+                    }
+
+                    if investigator.first_name is not None:
+                        location_investigators_dict['first_name'] = investigator.first_name.text.strip()
+                    if investigator.middle_name is not None:
+                        location_investigators_dict['middle_name'] = investigator.middle_name.text.strip()
+                    if investigator.last_name is not None:
+                        location_investigators_dict['last_name'] = investigator.last_name.text.strip()
+                    if investigator.degrees is not None:
+                        location_investigators_dict['degrees'] = investigator.degrees.text.strip()
+                    if investigator.role is not None:
+                        location_investigators_dict['role'] = investigator.role.text.strip()
+                    if investigator.affiliation is not None:
+                        location_investigators_dict['affiliation'] = investigator.affiliation.text.strip()
+
+                    location_investigators.append(location_investigators_dict)
+
+                location_dict['investigator'] = location_investigators
+
+            locations_list.append(location_dict)
+
+        base_dict['location'] = locations_list
+
+    return base_dict
+
+
+def add_location_countries(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="location_countries" type="countries_struct" minOccurs="0"/>
+
+        location_struct
+        <xs:complexType name="countries_struct">
+            <xs:sequence>
+                <xs:element name="country" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.location_countries is None:
+        base_dict['location_countries'] = None
+    else:
+        location_countries_list = []
+        countries = soup_clinical_study.location_countries.find_all(['country'])
+        for country in countries:
+            location_countries_list.append(country.text.strip())
+
+        base_dict['location_countries'] = location_countries_list
+
+    return base_dict
+
+
+def add_removed_countries(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="removed_countries" type="countries_struct" minOccurs="0"/>
+
+        location_struct
+        <xs:complexType name="countries_struct">
+            <xs:sequence>
+                <xs:element name="country" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.removed_countries is None:
+        base_dict['removed_countries'] = None
+    else:
+        removed_countries_list = []
+        countries = soup_clinical_study.removed_countries.find_all(['country'])
+        for country in countries:
+            removed_countries_list.append(country.text.strip())
+
+        base_dict['removed_countries'] = removed_countries_list
+
+    return base_dict
+
+
+def add_link(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="link" type="link_struct" minOccurs="0" maxOccurs="unbounded"/>
+
+        location_struct
+        <xs:complexType name="link_struct">
+            <xs:sequence>
+                <xs:element name="url" type="xs:string"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.find('link') is None:
+        base_dict['link'] = None
+    else:
+        link_list = []
+        links = soup_clinical_study.find_all('link')
+        for link in links:
+            print(link)
+            link_dict = {
+                'url': None,
+                'description': None
+            }
+            if link.find('url') is not None:
+                link_dict['url'] = link.find('url').text.strip()
+            if link.find('description') is not None:
+                link_dict['description'] = link.find('description').text.strip()
+
+            link_list.append(link_dict)
+
+        base_dict['link'] = link_list
+
+    return base_dict
+
+
+def add_reference(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="reference" type="reference_struct" minOccurs="0" maxOccurs="unbounded"/>
+
+        reference_struct
+        <xs:complexType name="reference_struct">
+            <xs:sequence>
+                <xs:element name="citation" type="xs:string" minOccurs="0"/>
+                <xs:element name="PMID" type="xs:positiveInteger" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.reference is None:
+        base_dict['reference'] = None
+    else:
+        reference_list = []
+        references = soup_clinical_study.find_all('reference')
+        for reference in references:
+            # print(reference)
+            reference_dict = {
+                'citation': None,
+                'PMID': None
+            }
+            if reference.find('citation') is not None:
+                reference_dict['citation'] = reference.find('citation').text.strip()
+            if reference.find('PMID') is not None:
+                reference_dict['PMID'] = reference.find('PMID').text.strip()
+
+            reference_list.append(reference_dict)
+
+        base_dict['reference'] = reference_list
+
+    return base_dict
+
+
+def add_results_reference(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="reference" type="reference_struct" minOccurs="0" maxOccurs="unbounded"/>
+
+        reference_struct
+        <xs:complexType name="reference_struct">
+            <xs:sequence>
+                <xs:element name="citation" type="xs:string" minOccurs="0"/>
+                <xs:element name="PMID" type="xs:positiveInteger" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    """
+
+    if soup_clinical_study.reference is None:
+        base_dict['results_reference'] = None
+    else:
+        results_reference_list = []
+        results_references = soup_clinical_study.find_all('results_reference')
+        for results_reference in results_references:
+            # print(results_reference)
+            results_reference_dict = {
+                'citation': None,
+                'PMID': None
+            }
+            if results_reference.find('citation') is not None:
+                results_reference_dict['citation'] = results_reference.find('citation').text.strip()
+            if results_reference.find('PMID') is not None:
+                results_reference_dict['PMID'] = results_reference.find('PMID').text.strip()
+
+            results_reference_list.append(results_reference_dict)
+
+        base_dict['results_reference'] = results_reference_list
+
+    return base_dict
+
+
+def add_verification_date(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="verification_date" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.verification_date is None:
+        base_dict['verification_date'] = None
+    else:
+        base_dict['verification_date'] = soup_clinical_study.verification_date.text.strip()
+
+    return base_dict
+
+
+def add_study_first_submitted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="study_first_submitted" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.study_first_submitted is None:
+        base_dict['study_first_submitted'] = None
+    else:
+        base_dict['study_first_submitted'] = soup_clinical_study.study_first_submitted.text.strip()
+
+    return base_dict
+
+
+def add_study_first_submitted_qc(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="study_first_submitted_qc" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.study_first_submitted_qc is None:
+        base_dict['study_first_submitted_qc'] = None
+    else:
+        base_dict['study_first_submitted_qc'] = soup_clinical_study.study_first_submitted_qc.text.strip()
+
+    return base_dict
+
+
+def add_study_first_posted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="study_first_posted" type="variable_date_struct" minOccurs="0"/>
+
+        variable_date_struct
+        <xs:complexType name="variable_date_struct">
+            <xs:simpleContent>
+                <xs:extension base="variable_date_type">
+                    <xs:attribute name="type" type="actual_enum" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.study_first_posted is None:
+        base_dict['study_first_posted'] = None
+    else:
+        base_dict['study_first_posted'] = soup_clinical_study.study_first_posted.text.strip()
+
+    return base_dict
+
+
+def add_results_first_submitted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="results_first_submitted" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.results_first_submitted is None:
+        base_dict['results_first_submitted'] = None
+    else:
+        base_dict['results_first_submitted'] = soup_clinical_study.results_first_submitted.text.strip()
+
+    return base_dict
+
+
+def add_results_first_submitted_qc(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="results_first_submitted_qc" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.results_first_submitted_qc is None:
+        base_dict['results_first_submitted_qc'] = None
+    else:
+        base_dict['results_first_submitted_qc'] = soup_clinical_study.results_first_submitted_qc.text.strip()
+
+    return base_dict
+
+
+def add_results_first_posted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="results_first_posted" type="variable_date_struct" minOccurs="0"/>
+
+        variable_date_struct
+        <xs:complexType name="variable_date_struct">
+            <xs:simpleContent>
+                <xs:extension base="variable_date_type">
+                    <xs:attribute name="type" type="actual_enum" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.results_first_posted is None:
+        base_dict['results_first_posted'] = None
+    else:
+        base_dict['results_first_posted'] = soup_clinical_study.results_first_posted.text.strip()
+
+    return base_dict
+
+
+def add_disposition_first_submitted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="disposition_first_submitted" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.disposition_first_submitted is None:
+        base_dict['disposition_first_submitted'] = None
+    else:
+        base_dict['disposition_first_submitted'] = soup_clinical_study.disposition_first_submitted.text.strip()
+
+    return base_dict
+
+
+def add_disposition_first_submitted_qc(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="disposition_first_submitted_qc" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.disposition_first_submitted_qc is None:
+        base_dict['disposition_first_submitted_qc'] = None
+    else:
+        base_dict['disposition_first_submitted_qc'] = soup_clinical_study.disposition_first_submitted_qc.text.strip()
+
+    return base_dict
+
+
+def add_disposition_first_posted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="disposition_first_posted" type="variable_date_struct" minOccurs="0"/>
+
+        variable_date_struct
+        <xs:complexType name="variable_date_struct">
+            <xs:simpleContent>
+                <xs:extension base="variable_date_type">
+                    <xs:attribute name="type" type="actual_enum" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.disposition_first_posted is None:
+        base_dict['disposition_first_posted'] = None
+    else:
+        base_dict['disposition_first_posted'] = soup_clinical_study.disposition_first_posted.text.strip()
+
+    return base_dict
+
+
+def add_last_update_submitted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="last_update_submitted" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.last_update_submitted is None:
+        base_dict['last_update_submitted'] = None
+    else:
+        base_dict['last_update_submitted'] = soup_clinical_study.last_update_submitted.text.strip()
+
+    return base_dict
+
+
+def add_last_update_submitted_qc(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="last_update_submitted_qc" type="variable_date_type" minOccurs="0"/>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.last_update_submitted_qc is None:
+        base_dict['last_update_submitted_qc'] = None
+    else:
+        base_dict['last_update_submitted_qc'] = soup_clinical_study.last_update_submitted_qc.text.strip()
+
+    return base_dict
+
+
+def add_last_update_posted(base_dict, soup_clinical_study):
+    """
+    Relevant .xsd structures:
+    <xs:element name="last_update_posted" type="variable_date_struct" minOccurs="0"/>
+
+        variable_date_struct
+        <xs:complexType name="variable_date_struct">
+            <xs:simpleContent>
+                <xs:extension base="variable_date_type">
+                    <xs:attribute name="type" type="actual_enum" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+
+        variable_date_type
+        <xs:simpleType name="variable_date_type">
+            <xs:restriction base="xs:string">
+                <xs:pattern value="(Unknown|((January|February|March|April|May|June|July|August|September|October|November|December) (([12]?[0-9]|30|31)\, )?[12][0-9]{3}))" />
+            </xs:restriction>
+        </xs:simpleType>
+    """
+
+    if soup_clinical_study.last_update_posted is None:
+        base_dict['last_update_posted'] = None
+    else:
+        base_dict['last_update_posted'] = soup_clinical_study.last_update_posted.text.strip()
+
+    return base_dict
 
 
 if __name__ == '__main__':
     print('[', time_stamp(), ']', 'reading zip file')
-
-    yaml_data = yaml.load(open('var.yaml', 'r'))
-    zip_path = yaml_data['zip_path']
-
+    zip_path = 'C:\\Users\\alfon\\OneDrive\\Documents\\dev\\python_od\\' \
+               'ctgov_dev\\ctgov\\data_temp\\all_studies\\new\\AllPublicXML.zip'
     z = zipfile.ZipFile(zip_path, 'r')
 
     list_filenames = z.namelist()[1:]
     print('[', time_stamp(), ']', len(list_filenames), 'xml files detected in zip')
 
-    for filename in list_filenames[19000:19100]:
+    # for filename in list_filenames[19100:19999]:
+    for filename in list_filenames:
         file_content = z.open(filename).read().decode('utf-8')
         soup = BeautifulSoup(file_content, 'lxml').clinical_study
 
@@ -771,7 +1264,27 @@ if __name__ == '__main__':
         # dict_study = add_biospec_descr(dict_study, soup)
         # dict_study = add_eligibility(dict_study, soup)
         # dict_study = add_overall_official(dict_study, soup)
-        dict_study = add_overall_contact(dict_study, soup)
+        # dict_study = add_overall_contact(dict_study, soup)
+        # dict_study = add_overall_contact_backup(dict_study, soup)
+        # dict_study = add_location(dict_study, soup)
+        # dict_study = add_location_countries(dict_study, soup)
+        # dict_study = add_removed_countries(dict_study, soup)
+        # dict_study = add_link(dict_study, soup)
+        # dict_study = add_reference(dict_study, soup)
+        # dict_study = add_results_reference(dict_study, soup)
+        # dict_study = add_verification_date(dict_study, soup)
+        # dict_study = add_study_first_submitted(dict_study, soup)
+        # dict_study = add_study_first_submitted_qc(dict_study, soup)
+        # dict_study = add_study_first_posted(dict_study, soup)
+        # dict_study = add_results_first_submitted(dict_study, soup)
+        # dict_study = add_results_first_submitted_qc(dict_study, soup)
+        # dict_study = add_results_first_posted(dict_study, soup)
+        # dict_study = add_disposition_first_submitted(dict_study, soup)
+        # dict_study = add_disposition_first_submitted_qc(dict_study, soup)
+        # dict_study = add_disposition_first_posted(dict_study, soup)
+        # dict_study = add_last_update_submitted(dict_study, soup)
+        # dict_study = add_last_update_submitted_qc(dict_study, soup)
+        # dict_study = add_last_update_posted(dict_study, soup)
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
@@ -785,6 +1298,18 @@ if __name__ == '__main__':
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
         # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+
+        # soup = BeautifulSoup(file_content, 'xml').clinical_study
+        # dict_study = add_link(dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+        # dict_study = (dict_study, soup)
+
         ppt(dict_study)
 
         print('=============================================')
